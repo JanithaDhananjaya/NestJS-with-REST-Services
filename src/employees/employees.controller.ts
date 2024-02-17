@@ -1,8 +1,22 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+  UsePipes, ValidationPipe
+} from "@nestjs/common";
 import { EmployeesService } from "./employees.service";
 import { Employee, EmployeeTier } from "./Employee.model";
 import { EmployeeSearchDto } from "./EmployeeSearch.dto";
 import { EmployeeUpdateDto } from "./EmployeeUpdate.dto";
+import { EmployeeCreateDto } from "./EmployeeCreate.dto";
+import { EmployeeTierValidationPipe } from "../employee-tier-validation/employee-tier-validation.pipe";
 
 @Controller("employees")
 export class EmployeesController {
@@ -10,6 +24,7 @@ export class EmployeesController {
   }
 
   @Get()
+  @UsePipes(ValidationPipe)
   getAllEmployees(@Query() param: EmployeeSearchDto) {
     if (Object.keys(param).length) {
       return this.employeeService.employeeSearch(param);
@@ -19,20 +34,12 @@ export class EmployeesController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
+  @UsePipes(new EmployeeTierValidationPipe())
   createEmployee(
-    @Body("firstName") firstName: string,
-    @Body("lastName") lastName: string,
-    @Body("designation") designation: string,
-    @Body("nearestCity") nearestCity: string,
-    @Body("tier") tier: EmployeeTier
+    @Body() employeeCreateDto: EmployeeCreateDto
   ) {
-    return this.employeeService.createEmployee(
-      firstName,
-      lastName,
-      designation,
-      nearestCity,
-      tier
-    );
+    return this.employeeService.createEmployee(employeeCreateDto);
   }
 
   @Get("/:id")
