@@ -1,0 +1,1 @@
+export const MONGO_CONNECTION = "mongodb+srv://user:user@ems.dvecqto.mongodb.net/?retryWrites=true&w=majority"
